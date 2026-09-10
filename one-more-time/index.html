@@ -17,6 +17,8 @@
       justify-content: center;
       padding: 24px;
       text-align: center;
+      user-select: none;
+      -webkit-user-select: none;
     }
     .card {
       max-width: 320px;
@@ -26,6 +28,7 @@
       border-radius: 16px;
       border: 1px solid #282828;
       box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      position: relative;
     }
     img {
       width: 100%;
@@ -58,32 +61,90 @@
       width: 100%;
       accent-color: #ff9900;
     }
+    /* Camada de toque que cobre o cartão */
+    #tap-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(18, 18, 18, 0.85);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 10;
+      transition: opacity 0.3s ease;
+    }
+    #tap-overlay .play-icon {
+      width: 64px;
+      height: 64px;
+      background: #ff9900;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 14px rgba(255, 153, 0, 0.4);
+    }
+    #tap-overlay .play-icon svg {
+      fill: #121212;
+      width: 28px;
+      height: 28px;
+      margin-left: 4px;
+    }
+    #tap-overlay span {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #fff;
+    }
   </style>
 </head>
 <body>
 
   <div class="card">
+    <!-- Overlay que pede um toque inicial caso o navegador bloqueie o autoplay -->
+    <div id="tap-overlay">
+      <div class="play-icon">
+        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      </div>
+      <span>Toque para ouvir</span>
+    </div>
+
     <img src="daft_punk_one_more_time.jpg" alt="Interstella 5555 - Daft Punk">
     <h1>One More Time</h1>
     <h2>Daft Punk</h2>
     <div class="lyrics">
       "One more time, we're gonna celebrate"
     </div>
-    <audio id="player" controls autoplay src="Daft_Punk_One_More_Time.mp3"></audio>
+    <audio id="player" controls src="Daft_Punk_One_More_Time.mp3"></audio>
   </div>
 
   <script>
     const player = document.getElementById('player');
-    
-    // Inicia no timestamp exato de 01:23 gravado na peça física
-    player.currentTime = 83;
+    const overlay = document.getElementById('tap-overlay');
 
-    // Tenta dar autoplay se o navegador permitir
-    window.addEventListener('load', () => {
-      player.play().catch(() => {
-        // Navegadores mobile podem exigir um toque na tela para iniciar o som
+    player.currentTime = 83; // 01:23
+
+    function startPlayback() {
+      player.play().then(() => {
+        overlay.style.opacity = '0';
+        setTimeout(() => { overlay.style.display = 'none'; }, 300);
+      }).catch((err) => {
+        console.log("Aguardando toque do usuário:", err);
       });
+    }
+
+    // Tenta autoplay silenciosamente ao carregar (se o navegador permitir)
+    window.addEventListener('load', () => {
+      startPlayback();
     });
+
+    // Se o navegador bloquear, qualquer toque no cartão inicia o som e remove o aviso
+    overlay.addEventListener('click', startPlayback);
+    overlay.addEventListener('touchstart', startPlayback);
   </script>
 
 </body>
