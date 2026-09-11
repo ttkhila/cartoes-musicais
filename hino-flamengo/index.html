@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hino do Flamengo</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: #121212;
+      color: #fff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .card {
+      max-width: 320px;
+      width: 100%;
+      background: #181818;
+      padding: 20px;
+      border-radius: 16px;
+      border: 1px solid #282828;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      position: relative;
+    }
+    img {
+      width: 100%;
+      border-radius: 12px;
+      object-fit: cover;
+      margin-bottom: 16px;
+      border: 1px solid #333;
+    }
+    h1 {
+      font-size: 1.4rem;
+      color: #ff9900;
+      margin-bottom: 4px;
+    }
+    h2 {
+      font-size: 0.95rem;
+      color: #b3b3b3;
+      font-weight: 400;
+      margin-bottom: 18px;
+    }
+    .lyrics {
+      font-size: 0.85rem;
+      color: #ff9900;
+      background: rgba(255, 153, 0, 0.1);
+      padding: 8px 12px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(255, 153, 0, 0.3);
+    }
+    audio {
+      width: 100%;
+      accent-color: #ff9900;
+    }
+    /* Camada de toque que cobre o cartão */
+    #tap-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(18, 18, 18, 0.85);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 10;
+      transition: opacity 0.3s ease;
+    }
+    #tap-overlay .play-icon {
+      width: 64px;
+      height: 64px;
+      background: #ff9900;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 14px rgba(255, 153, 0, 0.4);
+    }
+    #tap-overlay .play-icon svg {
+      fill: #121212;
+      width: 28px;
+      height: 28px;
+      margin-left: 4px;
+    }
+    #tap-overlay span {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <!-- Overlay que pede um toque inicial caso o navegador bloqueie o autoplay -->
+    <div id="tap-overlay">
+      <div class="play-icon">
+        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      </div>
+      <span>Toque para ouvir</span>
+    </div>
+
+    <img src="flamengo.png" alt="Hino do Flamengo">
+    <h1>Hino do Flamengo</h1>
+    <h2>Mengão</h2>
+    <div class="lyrics">
+      "Flamengo sempre eu hei de ser"
+    </div>
+    <audio id="player" controls src="hino_flamengo.mp3"></audio>
+  </div>
+
+  <script>
+    const player = document.getElementById('player');
+    const overlay = document.getElementById('tap-overlay');
+
+    player.currentTime = 83; // 01:23
+
+    function startPlayback() {
+      player.play().then(() => {
+        overlay.style.opacity = '0';
+        setTimeout(() => { overlay.style.display = 'none'; }, 300);
+      }).catch((err) => {
+        console.log("Aguardando toque do usuário:", err);
+      });
+    }
+
+    // Tenta autoplay silenciosamente ao carregar (se o navegador permitir)
+    window.addEventListener('load', () => {
+      startPlayback();
+    });
+
+    // Se o navegador bloquear, qualquer toque no cartão inicia o som e remove o aviso
+    overlay.addEventListener('click', startPlayback);
+    overlay.addEventListener('touchstart', startPlayback);
+  </script>
+
+</body>
+</html>
