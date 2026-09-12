@@ -30,6 +30,22 @@
       box-shadow: 0 10px 30px rgba(0,0,0,0.5);
       position: relative;
     }
+    
+    /* Cartão de dedicatória personalizada */
+    #custom-message {
+      display: none; /* Só aparece se houver o parâmetro na URL */
+      background: linear-gradient(135deg, rgba(255, 153, 0, 0.15), rgba(255, 100, 0, 0.05));
+      border: 1px dashed #ff9900;
+      border-radius: 10px;
+      padding: 10px 14px;
+      margin-bottom: 16px;
+      font-size: 0.9rem;
+      color: #ffb84d;
+      font-style: italic;
+      line-height: 1.3;
+      word-break: break-word;
+    }
+
     img {
       width: 100%;
       border-radius: 12px;
@@ -61,7 +77,6 @@
       width: 100%;
       accent-color: #ff9900;
     }
-    /* Camada de toque que cobre o cartão */
     #tap-overlay {
       position: absolute;
       top: 0;
@@ -105,7 +120,6 @@
 <body>
 
   <div class="card">
-    <!-- Overlay que pede um toque inicial caso o navegador bloqueie o autoplay -->
     <div id="tap-overlay">
       <div class="play-icon">
         <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
@@ -113,7 +127,10 @@
       <span>Toque para ouvir</span>
     </div>
 
-    <img src="flamengo.png" alt="Hino do Flamengo">
+    <!-- Caixa onde entra o recado personalizado -->
+    <div id="custom-message"></div>
+
+    <img src="flamengo.png" alt="Capa">
     <h1>Hino do Flamengo</h1>
     <h2>Mengão</h2>
     <div class="lyrics">
@@ -123,26 +140,35 @@
   </div>
 
   <script>
+    // Captura e exibe a mensagem personalizada via URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const message = urlParams.get('msg');
+    
+    if (message) {
+      const msgBox = document.getElementById('custom-message');
+      msgBox.textContent = `“${message}”`;
+      msgBox.style.display = 'block';
+    }
+
+    // Controle de reprodução
     const player = document.getElementById('player');
     const overlay = document.getElementById('tap-overlay');
 
-    player.currentTime = 19; // 00:19
+    player.currentTime = 83; // 01:23
 
     function startPlayback() {
       player.play().then(() => {
         overlay.style.opacity = '0';
         setTimeout(() => { overlay.style.display = 'none'; }, 300);
       }).catch((err) => {
-        console.log("Aguardando toque do usuário:", err);
+        console.log("Aguardando toque:", err);
       });
     }
 
-    // Tenta autoplay silenciosamente ao carregar (se o navegador permitir)
     window.addEventListener('load', () => {
       startPlayback();
     });
 
-    // Se o navegador bloquear, qualquer toque no cartão inicia o som e remove o aviso
     overlay.addEventListener('click', startPlayback);
     overlay.addEventListener('touchstart', startPlayback);
   </script>
